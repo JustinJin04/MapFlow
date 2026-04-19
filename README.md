@@ -29,7 +29,6 @@ bash examples/bash/accuracy/server_top_p.sh "qwen_8_1.7" "0.7" "0,1"
 ```
 Then launch vllm sender & receiver in seperate terminals:
 ```bash
-# execute in ./vllm directory
 bash vllm/attnmap_cache_integration/accuracy/sender_top_p.sh "Qwen3-8B" "0.7" "0"
 # split another terminal
 bash vllm/attnmap_cache_integration/accuracy/receiver_top_p.sh "Qwen3-1.7B" "0.7" "1" "./examples/weights/Qwen3-8B_to_Qwen3-1.7B/hotpotqa"
