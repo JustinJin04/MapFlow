@@ -40,7 +40,7 @@ Finally, execute the evalutation script:
 bash examples/bash/accuracy/hotpotqa.sh "0.7" "Qwen3-8B" "Qwen3-1.7B" 7001 7002 100
 ```
 
-If you change the top-$p$ value, remember to also change the port of evaluation script to $p*10000+1$ and $p*10000+2$ respectively.
+If you change the top-`p` value, remember to also change the port of evaluation script to `p*10000+1` and `p*10000+2` respectively.
 
 If you want to test accuracy for flexprefill you can launch vllm sender & receiver like:
 ```bash
