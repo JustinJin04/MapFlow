@@ -131,7 +131,7 @@ async def main_async():
         tokenizer = AutoTokenizer.from_pretrained(args.send_model)
     except Exception as exc:
         print(f"error loading tokenizer for model {args.send_model}: {exc}. Fall back to qwen tokenizer")
-        tokenizer = AutoTokenizer.from_pretrained("/data/mapflow/models/Qwen3-1.7B")
+        tokenizer = AutoTokenizer.from_pretrained("/data/zhan/MapFlow/examples/models/Qwen3-1.7B")
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     

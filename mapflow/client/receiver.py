@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 from mapflow.core.ipc_utils import CudaIPCWrapper, CpuIPCWrapper
 from mapflow.kernel.bsr_varlen_page_kernel_search_k import bsr_varlen_page_triton
+from mapflow.kernel.flex_prefill_kernel import flex_prefill_varlen_func
 from vllm.v1.attention.backends.fa_utils import flash_attn_varlen_func
 from vllm.v1.core.sched.output import SchedulerOutput
 from mapflow.core.prof_marker import prof_marker
@@ -281,7 +282,7 @@ class ClientReceiver:
         block_size: int,
         num_send_layers: int,
         server_main_port: int,
-        max_num_blocks_per_layer: int = 204000,
+        max_num_blocks_per_layer: int = 600000,
         max_num_seq_blocks_per_layer: int = 640,
         max_num_reqs: int = 128,
         max_seq_len: int = 40960,
@@ -536,6 +537,31 @@ class ClientReceiver:
                 num_splits=num_splits,
                 s_aux=s_aux,
             )
+
+
+            # flex_prefill_varlen_func(
+            #     q=q,
+            #     k_cache=key_cache,
+            #     v_cache=value_cache,
+            #     out=out,
+            #     cu_seqlens_q=cu_seqlens_q,
+            #     max_seqlen_q=max_seqlen_q,
+            #     seqused_k=seqused_k,
+            #     max_seqlen_k=max_seqlen_k,
+            #     softmax_scale=softmax_scale,
+            #     causal=causal,
+            #     alibi_slopes=alibi_slopes,
+            #     window_size=window_size,
+            #     block_table=block_table,
+            #     softcap=softcap,
+            #     scheduler_metadata=scheduler_metadata,
+            #     fa_version=fa_version,
+            #     q_descale=q_descale,
+            #     k_descale=k_descale,
+            #     v_descale=v_descale,
+            #     num_splits=num_splits,
+            #     s_aux=s_aux,
+            # )
             return
 
         with prof_marker(f"retrieve_sync_layer_{layer_idx}"):
@@ -553,12 +579,24 @@ class ClientReceiver:
             hit_trapezoid_sizes = self.client_batch_state.hit_trapezoid_sizes
             
             nnz = self.bsr_buffer.layers[send_layer_idx]["cu_col_indices_cpu"][num_reqs].item()
-            density = int(nnz / (hit_trapezoid_sizes * self.weights[layer_idx].shape[0]) * 100)
+            density = round(nnz / (hit_trapezoid_sizes * self.weights[layer_idx].shape[0]) * 100)
 
             if os.environ.get("SKIP_DENSITY_CHECK", "0") == "0":
                 # will always try to reuse by setting SKIP_DENSITY_CHECK=1(especially for accuracy checks) 
                 # density > 10 means it's not efficient enough to run bsr attention
-                if density > 10:
+                print(
+                    f"layer {layer_idx}, density = {nnz} / ({hit_trapezoid_sizes} * {self.weights[layer_idx].shape[0]}) = {density}% ({nnz / (hit_trapezoid_sizes * self.weights[layer_idx].shape[0]) * 100})"
+                    , flush=True
+                )
+                # if True:
+                # if density > 10:
+                # if density >= 4: # 3
+                # if density >= 5: # 3, 4
+                if density >= 6: # 3, 4, 5
+                # if density >= 7: # 3, 4, 5, 6
+                # if density >= 8: # 3, 4, 5, 6, 7
+                # if density >= 9: # density at 3, 4, 5, 6, 7, 8 using bsr attn
+                # if density >= 10: # density at 3, 4, 5, 6, 7, 8, 9 using bsr attn
                     hit_cache = False
             else:
                 print(
@@ -567,10 +605,34 @@ class ClientReceiver:
                 )
 
         if not hit_cache or self.client_batch_state.num_hit_tokens == 0:
-            flash_attn_varlen_func(
+            # flash_attn_varlen_func(
+            #     q=q,
+            #     k=key_cache,
+            #     v=value_cache,
+            #     out=out,
+            #     cu_seqlens_q=cu_seqlens_q,
+            #     max_seqlen_q=max_seqlen_q,
+            #     seqused_k=seqused_k,
+            #     max_seqlen_k=max_seqlen_k,
+            #     softmax_scale=softmax_scale,
+            #     causal=causal,
+            #     alibi_slopes=alibi_slopes,
+            #     window_size=window_size,
+            #     block_table=block_table,
+            #     softcap=softcap,
+            #     scheduler_metadata=scheduler_metadata,
+            #     fa_version=fa_version,
+            #     q_descale=q_descale,
+            #     k_descale=k_descale,
+            #     v_descale=v_descale,
+            #     num_splits=num_splits,
+            #     s_aux=s_aux,
+            # )
+
+            flex_prefill_varlen_func(
                 q=q,
-                k=key_cache,
-                v=value_cache,
+                k_cache=key_cache,
+                v_cache=value_cache,
                 out=out,
                 cu_seqlens_q=cu_seqlens_q,
                 max_seqlen_q=max_seqlen_q,

@@ -300,7 +300,9 @@ class ClientSender:
         server_main_port: int,
         device: str,
         max_num_reqs: int = 128,
-        ipc_buffer_size: int = 2048000,
+        # ipc_buffer_size: int = 2048000,
+        ipc_buffer_size: int = 3096000,
+        # ipc_buffer_size: int = 3548000,
         torch_dtype: torch.dtype = torch.bfloat16,
     ):
         self.num_layers = num_layers

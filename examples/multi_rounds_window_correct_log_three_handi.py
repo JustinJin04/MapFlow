@@ -778,7 +778,7 @@ def main():
         tokenizer = AutoTokenizer.from_pretrained(args.large_model)
     except Exception as exc:
         print(f"error loading tokenizer for model {args.large_model}: {exc}. Fall back to qwen tokenizer")
-        tokenizer = AutoTokenizer.from_pretrained("/data/mapflow/models/Qwen3-1.7B")
+        tokenizer = AutoTokenizer.from_pretrained("/data/zhan/MapFlow/examples/models/Qwen3-1.7B")
     
     full_ds = []
     with open(args.trace_file, "r", encoding="utf-8") as f:

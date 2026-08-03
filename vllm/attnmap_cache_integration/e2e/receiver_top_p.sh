@@ -3,11 +3,13 @@ export PYTHONPATH=$(dirname $(dirname $(dirname $(realpath $0)))):$PYTHONPATH
 
 model_name=${1}
 weights_dir=${2}
+gpu_memory_utilization=${3:-0.35}
 
 # common config
 export VLLM_ATTENTION_BACKEND=BSR_ATTN
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
 export TRITON_CACHE_DIR="./triton_cache"
+# export TRITON_CACHE_DIR="./triton_cache_tmp"
 export TRITON_PRINT_AUTOTUNING=1
 export VLLM_NUM_KV_HEADS=8
 export VLLM_HEAD_DIM=128
@@ -58,7 +60,7 @@ python -m vllm.entrypoints.openai.api_server \
     --enforce-eager \
     --no-async-scheduling \
     --disable-log-stats \
-    --max_model_len 40960 \
-    --gpu-memory-utilization 0.5 \
-    --max-num-batched-tokens $((4096+20)) \
+    --max_model_len 20960 \
+    --gpu-memory-utilization $gpu_memory_utilization \
+    --max-num-batched-tokens 20960 \
     --port 8001 2>&1

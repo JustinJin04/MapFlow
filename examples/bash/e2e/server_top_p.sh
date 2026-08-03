@@ -1,6 +1,7 @@
 #!/bin/bash
 
 model_pair=${1}
+max_num_blocks=${2:-6596000}
 
 # common config
 tp_size=4
@@ -49,4 +50,5 @@ python -m mapflow.server.server \
     --tp_size $tp_size \
     --block_size $block_size \
     --max_num_reqs $max_num_reqs \
+    --max_num_blocks $max_num_blocks \
     --dtype $dtype 2>&1

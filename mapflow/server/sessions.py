@@ -113,7 +113,10 @@ class StoreItems:
 
         self.permuted_indices_cat_buffer_pinned = torch.empty((data_blocks.shape[0],), dtype=torch.int32, device="cpu", pin_memory=True)
         block_size = data_blocks.shape[1]
-        self.block_tensor_gpu_buffer = torch.empty((600000, block_size, block_size), dtype=data_blocks.dtype, device=data_blocks.device)
+        # self.block_tensor_gpu_buffer = torch.empty((600000, block_size, block_size), dtype=data_blocks.dtype, device=data_blocks.device)
+        # self.block_tensor_gpu_buffer = torch.empty((100000, block_size, block_size), dtype=data_blocks.dtype, device=data_blocks.device)
+        self.block_tensor_gpu_buffer = torch.empty((10000, block_size, block_size), dtype=data_blocks.dtype, device=data_blocks.device)
+
 
     @prof_marker("insert_block")
     def insert_block(self, round_state: RoundStoreState, queue: BiDirQueue):

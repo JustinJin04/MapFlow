@@ -32,7 +32,7 @@ for (( i=0; i<$array_length; i++ )); do
     log_file="$results_dir/log_seq_0_40000_poisson_${traj_delay}_${turn_delay}.log"
 
     export PYTHONUNBUFFERED=1
-    python scripts/multi_rounds_window_correct_log.py \
+    python examples/multi_rounds_window_correct_log.py \
       --trace_file $trace_file \
       --min_seqlen 0 \
       --max_seqlen 40000 \

@@ -768,7 +768,7 @@ class FlexPrefillAttentionImpl(AttentionImpl):
                     cu_seqlens_q=cu_seqlens_q,
                     max_seqlen_q=max_seqlen_q,
                     seqused_k=seqused_k,
-                    seqused_k_list=seqused_k_list,
+                    # seqused_k_list=seqused_k_list,
                     max_seqlen_k=max_seqlen_k,
                     softmax_scale=self.scale,
                     causal=attn_metadata.causal,

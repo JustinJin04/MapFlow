@@ -58,7 +58,7 @@ python -m vllm.entrypoints.openai.api_server \
     --enforce-eager \
     --no-async-scheduling \
     --disable-log-stats \
-    --max_model_len 40960 \
+    --max_model_len 20480 \
     --gpu-memory-utilization 0.9 \
     --tensor-parallel-size 1 \
     --max-num-batched-tokens 4096 \

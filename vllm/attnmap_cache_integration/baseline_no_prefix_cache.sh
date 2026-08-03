@@ -1,5 +1,5 @@
 #!/bin/bash
-export PYTHONPATH=$(dirname $(dirname $(dirname $(realpath $0)))):$PYTHONPATH
+export PYTHONPATH=$(dirname $(dirname $(realpath $0))):$PYTHONPATH
 
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
 
@@ -22,4 +22,4 @@ python -m vllm.entrypoints.openai.api_server \
     --tensor-parallel-size $tp_size \
     --no-enable-prefix-caching \
     --max-num-batched-tokens 4096 \
-    --port $port 2>&1 | tee ./attnmap_cache_integration/log/sender_${model_name}_baseline.log
+    --port $port

@@ -205,9 +205,107 @@ class Lcc(BaseDataset):
         ]
         return messages
 
+
+class RulerQA(BaseDataset):
+
+    SYSTEM_PROMPT = "You are a precise question answering assistant. Use the CONTEXT to answer the QUESTION.\nReturn the **shortest** possible answer (e.g., single entity or 'yes'/'no'); no explanation.\n"   # qa's system prompt
+
+    def format_context(self, item: dict) -> str:
+        """Compact, readable multi-hop context."""
+        start_msg = "The following are given documents."
+        end_msg = "Answer the question based on the given documents. Only give me the answer and do not output any other words."
+        # extract the content between start and end msg
+        context = item["input"]
+        assert start_msg in context and end_msg in context, "Context formatting error."
+        ctx = context.split(start_msg)[1].split(end_msg)[0].strip()
+        return ctx
+
+    def preprocess_item(self, item: dict) -> tuple[list[dict[str, str]], str]:
+        ctx = self.format_context(item)
+        ctx_end_msg = "Answer the question based on the given documents. Only give me the answer and do not output any other words."
+        # print(f"debugggg: {item['input'].split(ctx_end_msg)}")
+        q = item["input"].split(ctx_end_msg)[-1].split("Question: ")[1].split(" Answer:")[0].strip()
+        ans = item["outputs"][0]
+
+        # Build chat messages
+        messages = [
+            {
+                "role": "system", 
+                "content": self.SYSTEM_PROMPT
+            },
+            {
+                "role": "user",
+                "content": f"Following is the CONTEXT:\n{ctx}\n\n",
+            },
+            {
+                "role": "assistant",
+                "content": "Acknowledged. Please provide the QUESTION.",
+            },
+            {
+                "role": "user",
+                "content": f"QUESTION: {q}",
+            },
+            {
+                "role": "assistant",
+                "content": ans,
+            },
+        ]
+        return messages
+
+
+class WikimultihopQA(BaseDataset):
+
+    SYSTEM_PROMPT = "You are a precise question answering assistant. Use the CONTEXT to answer the QUESTION.\nReturn the **shortest** possible answer (e.g., single entity or 'yes'/'no'); no explanation.\n"   # qa's system prompt
+
+    def format_context(self, item: dict) -> str:
+        """Compact, readable multi-hop context."""
+        titles = item["context"]["title"]
+        sents = item["context"]["content"]
+        sections = []
+        for t, ss in list(zip(titles, sents)):
+            snippet = " ".join(ss)
+            sections.append(f"- {t}: {snippet}")
+        return "\n".join(sections)
+
+    def preprocess_item(self, item: dict) -> tuple[list[dict[str, str]], str]:
+        ctx = self.format_context(item)
+        q = item["question"]
+        ans = item["answer"]
+
+        # Build chat messages
+        messages = [
+            {
+                "role": "system", 
+                "content": self.SYSTEM_PROMPT
+            },
+            {
+                "role": "user",
+                "content": f"Following is the CONTEXT:\n{ctx}\n\n",
+            },
+            {
+                "role": "assistant",
+                "content": "Acknowledged. Please provide the QUESTION.",
+            },
+            {
+                "role": "user",
+                "content": f"QUESTION: {q}",
+            },
+            {
+                "role": "assistant",
+                "content": ans,
+            },
+        ]
+        return messages
+
+
+
 def get_dataset(name, path: str, tokenizer, min_length: int=0, max_length: int=32768, num_max_examples: int = -1) -> Dataset:
     if name == "hotpotqa":
         return HotpotQA(path, tokenizer, min_length, max_length, num_max_examples=num_max_examples)
+    elif name == "rulerqa":
+        return RulerQA(path, tokenizer, min_length, max_length, num_max_examples=num_max_examples)
+    elif name == "wikimultihopqa":
+        return WikimultihopQA(path, tokenizer, min_length, max_length, num_max_examples=num_max_examples)
     elif name == "multinews":
         return MultiNews(path, tokenizer, min_length, max_length, num_max_examples=num_max_examples)
     elif name == "lcc":

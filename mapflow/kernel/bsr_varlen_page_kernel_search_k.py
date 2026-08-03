@@ -1090,11 +1090,46 @@ def main(m, n):
 
     print(f"warmup finished.", flush=True)
 
+def warmup_20k(m, n):
+    num_row_blocks_list = np.arange(320, 269, -1).tolist()
+    num_avg_nnz_per_row_block_list = (1 << np.arange(6, 13)).tolist()
+    # density_list = np.arange(3, 10 + 1).tolist()    
+    # density_list = np.arange(3, 8 + 1).tolist()
+    density_list = np.arange(3, 7 + 1).tolist()
+    # density_list = np.arange(3, 6 + 1).tolist()
+    # density_list = np.arange(3, 5 + 1).tolist()
+    # density_list = np.arange(3, 4 + 1).tolist()
+    # density_list = np.arange(3, 3 + 1).tolist()
+    print(f"start warmup. m: {m}, n: {n}\n"
+          f"density_list: {density_list}\n"
+          f"num_row_blocks_list: {num_row_blocks_list}\n"
+          f"num_avg_nnz_per_row_block_list: {num_avg_nnz_per_row_block_list}", flush=True)
+    # print(num_row_blocks_list)
+    # print(num_avg_nnz_per_row_block_list)
+    for density in tqdm(density_list):
+        for num_row_blocks in num_row_blocks_list:
+            for num_avg_nnz_per_row_block in num_avg_nnz_per_row_block_list:
+                warmup(
+                    m=m,
+                    n=n,
+                    n_kv=8,
+                    block_size=64,
+                    D=128,
+                    num_row_blocks=num_row_blocks,
+                    num_avg_nnz_per_row_block=num_avg_nnz_per_row_block,
+                    density=density,
+                )
+
+    print(f"warmup finished.", flush=True)
 
 HAS_WARMUP = False
 def run_warmup_once(m, n):
     global HAS_WARMUP
     if not HAS_WARMUP:
-        main(m, n)
-        torch.cuda.synchronize()
+        # main(m, n)
+        # warmup_20k(m, n)
+        # torch.cuda.synchronize()
+        # torch.cuda.empty_cache()
+        # torch.cuda.reset_peak_memory_stats()
+        # torch.cuda.reset_accumulated_memory_stats()
         HAS_WARMUP = True

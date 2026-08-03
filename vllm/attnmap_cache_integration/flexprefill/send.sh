@@ -13,6 +13,7 @@ python -m vllm.entrypoints.openai.api_server \
     --enforce-eager \
     --no-async-scheduling \
     --disable-log-stats \
+    --max_model_len 20480 \
     --gpu-memory-utilization 0.9 \
     --max-num-batched-tokens 4096 \
     --port $port 2>&1

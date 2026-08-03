@@ -1200,7 +1200,6 @@ def flex_prefill_varlen_func(
     cu_seqlens_q: torch.Tensor,
     max_seqlen_q: int,
     seqused_k: torch.Tensor,
-    seqused_k_list: list[int],
     max_seqlen_k: int,
     softmax_scale: float,
     causal: bool,
@@ -1223,7 +1222,7 @@ def flex_prefill_varlen_func(
     q_len = q.shape[0]
     num_reqs = cu_seqlens_q.shape[0] - 1
     assert num_reqs == 1
-    k_len = seqused_k_list[0]
+    k_len = seqused_k[0].item()
 
     block_size = 128
     if q_len <= max(2 * block_size, math.ceil(min_budget / block_size) * block_size):

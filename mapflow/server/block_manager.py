@@ -469,6 +469,11 @@ class BlockManagerWorker(mp_ctx.Process):
             layer_blockmetadata = self.hash_to_layer_blockmetadata[hash_str]
             assert layer_blockmetadata.pin_count > 0, f"Unpinning error: pin count for {hash_str} is already 0."
             layer_blockmetadata.pin_count -= 1
+        print(
+            f"BlockManager: Unpinned {len(hash_strs)} items, "
+            # f"Current cache size: {self.cache_policy.cache_size()} items. "
+            # f"Block pool usage: {self.block_pool.used_capacity()}/{self.block_pool.total_capacity()} blocks."
+        )
 
     def _try_evict_one_from_queue(self, queue: OrderedDict[str, None]) -> bool:
         checked = 0
