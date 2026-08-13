@@ -29,6 +29,6 @@ python -m vllm.entrypoints.openai.api_server \
     --disable-log-stats \
     --no-enable-prefix-caching \
     --max_model_len 20580 \
-    --gpu-memory-utilization 0.35 \
+    --gpu-memory-utilization 0.95 \
     --max-num-batched-tokens 20580 \
     --port $port 2>&1

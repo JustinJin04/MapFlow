@@ -592,11 +592,11 @@ class ClientReceiver:
                 # if density > 10:
                 # if density >= 4: # 3
                 # if density >= 5: # 3, 4
-                if density >= 6: # 3, 4, 5
+                # if density >= 6: # 3, 4, 5
                 # if density >= 7: # 3, 4, 5, 6
                 # if density >= 8: # 3, 4, 5, 6, 7
                 # if density >= 9: # density at 3, 4, 5, 6, 7, 8 using bsr attn
-                # if density >= 10: # density at 3, 4, 5, 6, 7, 8, 9 using bsr attn
+                if density >= 10: # density at 3, 4, 5, 6, 7, 8, 9 using bsr attn
                     hit_cache = False
             else:
                 print(
@@ -605,34 +605,10 @@ class ClientReceiver:
                 )
 
         if not hit_cache or self.client_batch_state.num_hit_tokens == 0:
-            # flash_attn_varlen_func(
-            #     q=q,
-            #     k=key_cache,
-            #     v=value_cache,
-            #     out=out,
-            #     cu_seqlens_q=cu_seqlens_q,
-            #     max_seqlen_q=max_seqlen_q,
-            #     seqused_k=seqused_k,
-            #     max_seqlen_k=max_seqlen_k,
-            #     softmax_scale=softmax_scale,
-            #     causal=causal,
-            #     alibi_slopes=alibi_slopes,
-            #     window_size=window_size,
-            #     block_table=block_table,
-            #     softcap=softcap,
-            #     scheduler_metadata=scheduler_metadata,
-            #     fa_version=fa_version,
-            #     q_descale=q_descale,
-            #     k_descale=k_descale,
-            #     v_descale=v_descale,
-            #     num_splits=num_splits,
-            #     s_aux=s_aux,
-            # )
-
-            flex_prefill_varlen_func(
+            flash_attn_varlen_func(
                 q=q,
-                k_cache=key_cache,
-                v_cache=value_cache,
+                k=key_cache,
+                v=value_cache,
                 out=out,
                 cu_seqlens_q=cu_seqlens_q,
                 max_seqlen_q=max_seqlen_q,
@@ -652,6 +628,30 @@ class ClientReceiver:
                 num_splits=num_splits,
                 s_aux=s_aux,
             )
+
+            # flex_prefill_varlen_func(
+            #     q=q,
+            #     k_cache=key_cache,
+            #     v_cache=value_cache,
+            #     out=out,
+            #     cu_seqlens_q=cu_seqlens_q,
+            #     max_seqlen_q=max_seqlen_q,
+            #     seqused_k=seqused_k,
+            #     max_seqlen_k=max_seqlen_k,
+            #     softmax_scale=softmax_scale,
+            #     causal=causal,
+            #     alibi_slopes=alibi_slopes,
+            #     window_size=window_size,
+            #     block_table=block_table,
+            #     softcap=softcap,
+            #     scheduler_metadata=scheduler_metadata,
+            #     fa_version=fa_version,
+            #     q_descale=q_descale,
+            #     k_descale=k_descale,
+            #     v_descale=v_descale,
+            #     num_splits=num_splits,
+            #     s_aux=s_aux,
+            # )
             return
 
         if self.client_batch_state.num_miss_tokens > 0:
