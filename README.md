@@ -52,7 +52,24 @@ And execute the evaluation script:
 bash examples/bash/accuracy/hotpotqa.sh "flexprefill" "Qwen3-8B" "Qwen3-1.7B" 8000 8001 100
 ```
 
+If you want to test accuracy for minference you can launch vllm sender & receiver like:
+
+```bash
+bash vllm/attnmap_cache_integration/minference/send.sh "Qwen3-8B" "0" "8000"
+# split another terminal
+bash vllm/attnmap_cache_integration/minference/recv.sh "Qwen3-1.7B" "1" "8001"
+```
+
+And execute the same evaluation script:
+
+```bash
+bash examples/bash/accuracy/hotpotqa.sh "minference" "Qwen3-8B" "Qwen3-1.7B" 8000 8001 100
+```
+
+
+
 ## 3. TTFT Test
+
 You can test TTFT by first launch server:
 ```bash
 bash examples/bash/e2e/server_top_p.sh qwen_8_1.7 0.7
@@ -77,7 +94,10 @@ If you want to test for flexprefill you can launch vllm sender & receiver same a
 bash examples/bash/ttft/hotpotqa.sh "flexprefill" "Qwen3-8B" "Qwen3-1.7B" "8000" "8001" 10
 ```
 
+
+
 ## 4. End-to-End Throughput Test
+
 The commands for testing e2e throughput are almost the same as ttft test, except the evaluation script:
 ```bash
 bash examples/bash/e2e/multi_rounds_window_correct_log.sh "0.7" "Qwen3-8B" "Qwen3-1.7B"
@@ -93,7 +113,10 @@ If you want to test with other routing threshold, you can change the path of tra
 trace_file="./examples/data/e2e/test_100_routes_threshold_0.10.jsonl"
 ```
 
+
+
 ## 5. Single-Workflow Latency for Three Models
+
 For server:
 ```bash
 bash examples/bash/three/server_top_p.sh "ministral" "4"
@@ -117,4 +140,36 @@ python examples/extract_three.py --file_path {path_to_log}
 ```
 
 
+
 ## 6. Long-Context Evaluation on RULER-20k
+
+For server:
+
+```bash
+bash examples/bash/e2e/server_top_p_ttft.sh $model_pair
+```
+
+For vllm engiines:
+
+```bash
+# sender
+bash vllm/attnmap_cache_integration/e2e/sender_top_p.sh $sender $top_p
+# receiver
+bash vllm/attnmap_cache_integration/e2e/receiver_top_p.sh $receiver $weights_dir
+```
+
+Evaluation script:
+
+```bash
+bash examples/bash/accuracy/rulerqa.sh "mapflow" $sender $receiver 8000 8001 100 
+```
+
+Parameters mapping:
+
+| model_pair     | sender         | receiver      | top_p | weights_dir                                              |
+| -------------- | -------------- | ------------- | ----- | -------------------------------------------------------- |
+| qwen_8_1.7     | Qwen3-8B       | Qwen3-1.7B    | 0.92  | examples/weights/Qwen3-8B_to_Qwen3-1.7B/rulerqa          |
+| qwen_14_8      | Qwen3-14B      | Qwen3-8B      | 0.87  | examples/weights/Qwen3-14B_to_Qwen3-8B/rulerqa           |
+| ministral_8_3  | Ministral3-8B  | Ministral3-3B | 0.85  | examples/weights/Ministral3-8B_to_Ministral3-3B/rulerqa  |
+| ministral_14_8 | Ministral3-14B | Ministral3-8B | 0.87  | examples/weights/Ministral3-14B_to_Ministral3-8B/rulerqa |
+
