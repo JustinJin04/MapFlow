@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 from dataclasses import dataclass, field
 from mapflow.core.ipc_utils import CudaIPCWrapper, CpuIPCWrapper
 from mapflow.kernel.bsr_varlen_page_kernel_search_k import bsr_varlen_page_triton
+# from mapflow.kernel.bsr_varlen_page_kernel_search_k_general import bsr_varlen_page_triton
 from mapflow.kernel.flex_prefill_kernel import flex_prefill_varlen_func
 from vllm.v1.attention.backends.fa_utils import flash_attn_varlen_func
 from vllm.v1.core.sched.output import SchedulerOutput

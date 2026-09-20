@@ -1,5 +1,4 @@
 from mapflow.client import ClientReceiver, ClientSender
-from mapflow.kernel.bsr_varlen_page_kernel_search_k import run_warmup_once
 from mapflow.core import load_weights
 from mapflow.core.prof_marker import prof_marker
 
@@ -42,11 +41,11 @@ def get_mapflow_client(
         )
     else:
         # receiver
-        if run_warmup:
-            run_warmup_once(
-                m=num_send_heads,
-                n=num_total_heads,
-            )
+        # if run_warmup:
+        #     run_warmup_once(
+        #         m=num_send_heads,
+        #         n=num_total_heads,
+        #     )
         weights_dict = load_weights(weights_dir)
         if force_wait_sync is None:
             force_wait_sync = False
