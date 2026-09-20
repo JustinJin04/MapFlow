@@ -41,6 +41,9 @@ class AttentionBackendEnum(Enum, metaclass=_AttentionBackendEnumMeta):
         backend.get_class()
     """
     FLEXPREFILL_ATTN = "vllm.v1.attention.backends.flexprefill_attn.FlexPrefillAttentionBackend"
+    MINFERENCE = (
+        "vllm.v1.attention.backends.minference_attn.MInferenceAttentionBackend"
+    )
     BSR_ATTN = "vllm.v1.attention.backends.bsr_attn.BSRAttnBackend"
     FLASH_ATTN = "vllm.v1.attention.backends.flash_attn.FlashAttentionBackend"
     FLASH_ATTN_DIFFKV = (

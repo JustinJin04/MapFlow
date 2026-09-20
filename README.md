@@ -115,3 +115,6 @@ Log extraction:
 ```bash
 python examples/extract_three.py --file_path {path_to_log}
 ```
+
+
+## 6. Long-Context Evaluation on RULER-20k
